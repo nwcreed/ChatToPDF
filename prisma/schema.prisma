@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id           String   @id @default(uuid())       // ID unique
+  originalName String                               // Nom d'origine du fichier
+  fileName     String   @unique                            // Nom généré (UUID + nom)
+  url          String                               // Lien public R2
+  size         Int                                  // Taille en octets
+  type         String?                              // Type MIME (ex: image/png)
+  createdAt    DateTime @default(now())             // Date d’upload
+  updatedAt    DateTime @updatedAt                  // Dernière mise à jour
+
+  chats Chat[] @relation("ChatFiles")               // Relation Many-to-Many avec Chat
+}
+
+model Chat {
+  id        String    @id @default(uuid())       // ID unique
+  createdAt DateTime  @default(now())            // Date de création
+
+  files     File[]    @relation("ChatFiles")     // Many-to-Many avec File
+  messages  Message[]                                // Relation One-to-Many avec Message
+}
+
+model Message {
+  id        String   @id @default(uuid())       // ID unique
+  content   String                                // Contenu du message
+  role      String                                // "user", "assistant", "system"
+  createdAt DateTime @default(now())             // Date du message
+
+  chatId    String                                // FK vers Chat
+  chat      Chat   @relation(fields: [chatId], references: [id])
+}

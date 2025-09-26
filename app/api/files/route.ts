@@ -39,7 +39,7 @@ export const POST = async (req: NextRequest) => {
           })
         );
 
-        const fileUrl = `${process.env.AWS_PUBLIC_URL}/${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
+        const fileUrl = `${process.env.AWS_PUBLIC_URL}${process.env.AWS_S3_BUCKET_NAME}/${fileName}`;
 
         // ✅ Enregistrer dans Prisma
         const savedFile = await prisma.file.create({
